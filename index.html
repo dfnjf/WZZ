@@ -1,34 +1,237 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<!-- data-view 决定手机版/电脑版。默认手机版，脚本会按设备特征与用户选择改写。 -->
+<html lang="zh-CN" data-view="mobile">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>小说创作台 · 安卓客户端下载</title>
-  <meta http-equiv="refresh" content="0;url=https://novel-studio-mp.app.workbuddy.host/download.html" />
-  <script>
-    location.replace('https://novel-studio-mp.app.workbuddy.host/download.html');
-  </script>
-  <style>
-    body {
-      margin: 0; min-height: 100vh;
-      display: flex; align-items: center; justify-content: center;
-      background: #f2f0ea; color: #23262b;
-      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
-    }
-    .box { text-align: center; padding: 24px; max-width: 320px; }
-    .mark {
-      width: 72px; height: 72px; line-height: 72px; margin: 0 auto 16px;
-      border-radius: 16px; background: #b4453a; color: #fff; font-size: 34px;
-    }
-    p { margin: 6px 0; font-size: 15px; color: #4b5158; }
-    a { color: #b4453a; }
-  </style>
+<meta charset="UTF-8" />
+<!-- 手机版：按设备宽度排版。切到电脑版时由脚本改写为 width=1200。
+     这里只用标准字段，不添加实验性字段，避免个别浏览器整条声明失效。 -->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#f2f0ea" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<title>小说创作台 · 在线写作</title>
+<meta name="description" content="在线小说创作台：创建作品、撰写章节、云端保存，随时继续编辑。" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23b4453a'/%3E%3Cpath d='M20 44 L44 20 L41 33 L31 44 Z' fill='%23fff'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="box">
-    <div class="mark">墨</div>
-    <p>正在进入下载页……</p>
-    <p><a href="https://novel-studio-mp.app.workbuddy.host/download.html">如果未自动跳转，点这里下载</a></p>
+
+<!-- ============ 登录视图 ============ -->
+<div id="auth-view" class="auth-view hidden">
+  <div class="auth-glow" aria-hidden="true"></div>
+  <main class="auth-card">
+    <div class="auth-brand">
+      <span class="brand-mark">墨</span>
+      <div>
+        <h1 class="auth-title">小说创作台</h1>
+        <p class="auth-sub">在线创作 · 云端保存 · 随时继续</p>
+      </div>
+    </div>
+
+    <div class="auth-tabs" role="tablist">
+      <button class="auth-tab is-active" data-tab="otp" type="button" role="tab">邮箱验证码</button>
+      <button class="auth-tab" data-tab="password" type="button" role="tab">邮箱密码</button>
+    </div>
+
+    <section class="auth-panel" data-panel="otp">
+      <label class="field">
+        <span class="field-label">邮箱</span>
+        <input id="email-input" class="input" type="email" inputmode="email" maxlength="120"
+               placeholder="you@example.com" autocomplete="email" />
+      </label>
+      <p id="email-error" class="field-error hidden"></p>
+
+      <label class="field">
+        <span class="field-label">邮箱验证码</span>
+        <div class="code-row">
+          <input id="email-code-input" class="input" type="text" inputmode="numeric" maxlength="6"
+                 placeholder="6 位验证码" autocomplete="one-time-code" />
+          <button id="send-code-btn" class="btn btn-ghost" type="button">获取验证码</button>
+        </div>
+      </label>
+
+      <button id="otp-login-btn" class="btn btn-primary btn-block" type="button">登录 / 注册</button>
+      <p class="auth-hint">未注册的邮箱验证通过后会直接创建账号，无需设置密码；<br />想用密码登录时，可在「邮箱密码」页点「忘记密码 / 设置密码」设置。</p>
+    </section>
+
+    <section class="auth-panel hidden" data-panel="password">
+      <label class="field">
+        <span class="field-label">邮箱</span>
+        <input id="pwd-email-input" class="input" type="email" inputmode="email" maxlength="120"
+               placeholder="you@example.com" autocomplete="email" />
+      </label>
+
+      <label class="field">
+        <span class="field-label">密码</span>
+        <input id="pwd-input" class="input" type="password" maxlength="64"
+               placeholder="请输入密码" autocomplete="current-password" />
+      </label>
+
+      <button id="password-login-btn" class="btn btn-primary btn-block" type="button">登录</button>
+      <p class="auth-hint auth-hint-action">
+        <button id="forgot-btn" class="link-btn" type="button">忘记密码 / 设置密码</button>
+      </p>
+    </section>
+
+    <p id="auth-error" class="auth-error hidden" role="alert"></p>
+    <p class="auth-foot">每位用户只能看到自己的作品，数据在服务端按账号隔离。</p>
+  </main>
+</div>
+
+<!-- ============ 写作主视图 ============ -->
+<div id="app-view" class="app-view hidden">
+
+  <header class="mobile-bar">
+    <button id="open-novels-btn" class="icon-btn" type="button" aria-label="打开作品列表">☰ 作品</button>
+    <span id="mobile-title" class="mobile-title">小说创作台</span>
+    <span class="mobile-bar-actions">
+      <button id="view-toggle-btn-mobile" class="icon-btn" type="button" title="切换显示模式">电脑版</button>
+      <button id="library-btn-mobile" class="icon-btn" type="button" title="作品广场">书库</button>
+      <button id="open-chapters-btn" class="icon-btn" type="button" aria-label="打开章节目录">目录</button>
+    </span>
+  </header>
+
+  <div class="workspace">
+
+    <!-- 左栏：作品列表 -->
+    <aside id="novel-pane" class="novel-pane">
+      <header class="pane-head">
+        <div class="pane-brand">
+          <span class="brand-mark small">墨</span>
+          <span class="pane-brand-name">小说创作台</span>
+        </div>
+        <span class="pane-head-actions">
+          <button id="library-btn" class="btn btn-ghost btn-sm" type="button">书库</button>
+          <button id="new-novel-btn" class="btn btn-primary btn-sm" type="button">＋ 新建作品</button>
+        </span>
+      </header>
+      <div id="novel-stats" class="pane-stats"></div>
+      <div id="novel-list" class="list" aria-label="作品列表"></div>
+      <footer class="pane-foot">
+        <button id="profile-btn" class="user-chip" type="button" title="点击设置 / 修改笔名">
+          <span id="user-avatar" class="avatar">作</span>
+          <span id="user-name" class="user-name">未登录</span>
+        </button>
+        <button id="view-toggle-btn" class="btn btn-ghost btn-sm" type="button" title="切换显示模式">电脑版</button>
+        <button id="logout-btn" class="btn btn-ghost btn-sm" type="button">退出登录</button>
+      </footer>
+    </aside>
+
+    <!-- 中栏：章节目录 -->
+    <section id="chapter-pane" class="chapter-pane">
+      <header class="pane-head">
+        <div class="pane-title-wrap">
+          <h2 id="current-novel-title" class="pane-title">未选择作品</h2>
+          <span id="current-novel-meta" class="pane-meta">—</span>
+        </div>
+        <div class="pane-actions">
+          <button id="novel-info-btn" class="btn btn-ghost btn-sm" type="button" disabled>作品信息</button>
+          <button id="export-btn" class="btn btn-ghost btn-sm" type="button" disabled>导出</button>
+          <button id="delete-novel-btn" class="btn btn-danger-ghost btn-sm" type="button" disabled>删除</button>
+        </div>
+      </header>
+      <div class="pane-subhead">
+        <span class="pane-subhead-label">章节目录</span>
+        <label class="sync-toggle" title="开启后，每次保存都会把这部作品的最新内容同步更新到书库（作品广场）">
+          <input id="auto-sync-checkbox" type="checkbox" disabled />
+          <span>同步到书库</span>
+          <span id="sync-status" class="sync-status"></span>
+        </label>
+        <button id="new-chapter-btn" class="btn btn-primary btn-sm" type="button" disabled>＋ 新建章节</button>
+      </div>
+      <div id="chapter-list" class="list" aria-label="章节目录"></div>
+    </section>
+
+    <!-- 右栏：编辑区 -->
+    <main id="editor-pane" class="editor-pane">
+      <div id="editor-empty" class="editor-empty">
+        <div class="empty-mark">✒</div>
+        <h3>开始你的创作</h3>
+        <p>从左栏新建或选择一部作品，再创建章节即可开始写作。<br />章节保存后会持久存储到云端，下次打开可直接继续编辑。</p>
+      </div>
+
+      <div id="editor-body" class="editor-body hidden">
+        <header class="editor-head">
+          <input id="chapter-title-input" class="chapter-title-input" type="text"
+                 placeholder="章节标题" maxlength="80" />
+          <div class="editor-head-right">
+            <span id="save-status" class="save-status is-saved">已保存</span>
+            <button id="save-btn" class="btn btn-primary" type="button">保存
+              <kbd class="kbd">Ctrl</kbd><kbd class="kbd">S</kbd>
+            </button>
+          </div>
+        </header>
+
+        <div id="draft-banner" class="draft-banner hidden">
+          <span id="draft-banner-text" class="draft-banner-text"></span>
+          <span class="draft-banner-actions">
+            <button id="draft-restore-btn" class="btn btn-ghost btn-sm" type="button">恢复草稿</button>
+            <button id="draft-discard-btn" class="btn btn-ghost btn-sm" type="button">丢弃</button>
+          </span>
+        </div>
+
+        <div class="editor-scroll">
+          <div class="editor-inner">
+            <textarea id="chapter-content" class="chapter-content" placeholder="在此书写正文……"
+                      spellcheck="false"></textarea>
+          </div>
+        </div>
+
+        <div id="voice-strip" class="voice-strip hidden" aria-live="polite">
+          <span class="voice-wave" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          <span id="voice-text" class="voice-text"></span>
+        </div>
+
+        <footer class="editor-foot">
+          <span id="word-count" class="word-count">0 字</span>
+          <span id="saved-at" class="saved-at"></span>
+          <button id="voice-btn" class="voice-btn" type="button" aria-pressed="false" title="用说话代替打字">
+            <svg class="voice-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="9" y="3" width="6" height="11" rx="3"></rect>
+              <path d="M5.5 11.5a6.5 6.5 0 0 0 13 0"></path>
+              <path d="M12 18.5v2.5"></path>
+            </svg>
+            <span id="voice-btn-label">语音输入</span>
+          </button>
+          <label class="autosave-toggle">
+            <input id="autosave-checkbox" type="checkbox" checked /> 自动保存
+          </label>
+        </footer>
+      </div>
+    </main>
   </div>
+</div>
+
+<!-- 移动端抽屉遮罩 -->
+<div id="drawer-backdrop" class="drawer-backdrop hidden"></div>
+
+<!-- 书库（作品广场）覆盖层 -->
+<div id="library-view" class="library-view hidden">
+  <header class="library-head">
+    <button id="library-back-btn" class="icon-btn" type="button" aria-label="返回" style="display:none">←</button>
+    <h2 id="library-title" class="library-title">作品广场</h2>
+    <span class="library-head-actions">
+      <button id="library-upload-btn" class="btn btn-primary btn-sm" type="button">＋ 上传作品</button>
+      <button id="library-close-btn" class="icon-btn" type="button" aria-label="关闭">×</button>
+    </span>
+  </header>
+  <div id="library-body" class="library-body"></div>
+</div>
+
+<!-- 浮层容器 -->
+<div id="toast-container" class="toast-container" aria-live="polite"></div>
+<div id="modal-root"></div>
+
+<!-- 启动遮罩 -->
+<div id="boot-overlay" class="boot-overlay">
+  <div class="boot-spinner" aria-hidden="true"></div>
+  <p id="boot-text">正在加载创作台…</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@tencent-ai/workbuddy-cloud-sdk@dev/lib/index.global.js"
+        onerror="window.__sdkLoadFailed = true"></script>
+<script src="app.js"></script>
 </body>
 </html>
