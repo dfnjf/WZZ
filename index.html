@@ -1,237 +1,177 @@
 <!DOCTYPE html>
-<!-- data-view 决定手机版/电脑版。默认手机版，脚本会按设备特征与用户选择改写。 -->
-<html lang="zh-CN" data-view="mobile">
+<html lang="zh-CN">
 <head>
-<meta charset="UTF-8" />
-<!-- 手机版：按设备宽度排版。切到电脑版时由脚本改写为 width=1200。
-     这里只用标准字段，不添加实验性字段，避免个别浏览器整条声明失效。 -->
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="theme-color" content="#f2f0ea" />
-<meta name="mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="default" />
-<title>小说创作台 · 在线写作</title>
-<meta name="description" content="在线小说创作台：创建作品、撰写章节、云端保存，随时继续编辑。" />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23b4453a'/%3E%3Cpath d='M20 44 L44 20 L41 33 L31 44 Z' fill='%23fff'/%3E%3C/svg%3E" />
-<link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>小说创作台 · 安卓客户端下载</title>
+  <meta name="description" content="下载小说创作台安卓客户端，随时随地在手机上写小说。" />
+  <style>
+    :root {
+      --bg: #f2f0ea;
+      --panel: #ffffff;
+      --ink: #23262b;
+      --ink-2: #4b5158;
+      --muted: #8a9099;
+      --line: #e8e4dc;
+      --accent: #b4453a;
+      --accent-deep: #9c382f;
+      --accent-soft: #f9eeec;
+      --warn-bg: #fdf6ec;
+      --warn-line: #f0dcbc;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap {
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 32px 18px calc(48px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
+    .brand-mark {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: var(--accent); color: #fff;
+      font-size: 20px; display: flex; align-items: center; justify-content: center;
+    }
+    .brand-name { font-size: 16px; font-weight: 600; }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 22px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 2px rgba(40, 33, 22, .04);
+    }
+
+    .app-card { text-align: center; }
+    .app-icon {
+      width: 88px; height: 88px; border-radius: 20px;
+      box-shadow: 0 6px 18px rgba(156, 56, 47, .22);
+    }
+    .app-name { margin: 14px 0 4px; font-size: 22px; font-weight: 700; }
+    .app-ver { margin: 0; color: var(--muted); font-size: 13px; }
+
+    .download-btn {
+      display: block;
+      margin: 20px 0 10px;
+      padding: 15px 20px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 17px;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 12px;
+      transition: background .15s ease;
+    }
+    .download-btn:active { background: var(--accent-deep); }
+    .app-meta { margin: 0; color: var(--muted); font-size: 12.5px; }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    h2::before {
+      content: ""; width: 3px; height: 15px;
+      background: var(--accent); border-radius: 2px;
+    }
+    ol, ul { margin: 0; padding-left: 20px; }
+    li { margin-bottom: 8px; font-size: 14px; color: var(--ink-2); }
+    li:last-child { margin-bottom: 0; }
+    li strong { color: var(--ink); }
+    p { font-size: 14px; color: var(--ink-2); }
+    p:last-child { margin-bottom: 0; }
+
+    .tip { background: var(--accent-soft); border-radius: 10px; padding: 12px 14px; margin-top: 12px; }
+    .tip p { margin: 0; font-size: 13px; }
+    .tip a { color: var(--accent); font-weight: 600; text-decoration: none; }
+
+    .warn { background: var(--warn-bg); border: 1px solid var(--warn-line); border-radius: 10px; padding: 12px 14px; margin-top: 12px; }
+    .warn p { margin: 0; font-size: 13px; color: #7a5b21; }
+
+    .muted { color: var(--muted); font-size: 12.5px; }
+    footer { text-align: center; margin-top: 26px; }
+  </style>
 </head>
 <body>
-
-<!-- ============ 登录视图 ============ -->
-<div id="auth-view" class="auth-view hidden">
-  <div class="auth-glow" aria-hidden="true"></div>
-  <main class="auth-card">
-    <div class="auth-brand">
-      <span class="brand-mark">墨</span>
-      <div>
-        <h1 class="auth-title">小说创作台</h1>
-        <p class="auth-sub">在线创作 · 云端保存 · 随时继续</p>
-      </div>
+  <div class="wrap">
+    <div class="brand">
+      <div class="brand-mark">墨</div>
+      <div class="brand-name">小说创作台</div>
     </div>
 
-    <div class="auth-tabs" role="tablist">
-      <button class="auth-tab is-active" data-tab="otp" type="button" role="tab">邮箱验证码</button>
-      <button class="auth-tab" data-tab="password" type="button" role="tab">邮箱密码</button>
-    </div>
-
-    <section class="auth-panel" data-panel="otp">
-      <label class="field">
-        <span class="field-label">邮箱</span>
-        <input id="email-input" class="input" type="email" inputmode="email" maxlength="120"
-               placeholder="you@example.com" autocomplete="email" />
-      </label>
-      <p id="email-error" class="field-error hidden"></p>
-
-      <label class="field">
-        <span class="field-label">邮箱验证码</span>
-        <div class="code-row">
-          <input id="email-code-input" class="input" type="text" inputmode="numeric" maxlength="6"
-                 placeholder="6 位验证码" autocomplete="one-time-code" />
-          <button id="send-code-btn" class="btn btn-ghost" type="button">获取验证码</button>
-        </div>
-      </label>
-
-      <button id="otp-login-btn" class="btn btn-primary btn-block" type="button">登录 / 注册</button>
-      <p class="auth-hint">未注册的邮箱验证通过后会直接创建账号，无需设置密码；<br />想用密码登录时，可在「邮箱密码」页点「忘记密码 / 设置密码」设置。</p>
+    <section class="card app-card">
+      <img class="app-icon" src="data:image/png;base64,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" alt="小说创作台" width="88" height="88" />
+      <h1 class="app-name">小说创作台</h1>
+      <p class="app-ver">安卓客户端 · v1.4</p>
+      <a class="download-btn" href="https://novel-studio-59628.app.workbuddy.host/apk/novel-studio.apk?v=1.4" download>下载安装包（APK）</a>
+      <p class="app-meta">约 62 KB · 支持 Android 5.0 及以上 · 免费</p>
     </section>
 
-    <section class="auth-panel hidden" data-panel="password">
-      <label class="field">
-        <span class="field-label">邮箱</span>
-        <input id="pwd-email-input" class="input" type="email" inputmode="email" maxlength="120"
-               placeholder="you@example.com" autocomplete="email" />
-      </label>
-
-      <label class="field">
-        <span class="field-label">密码</span>
-        <input id="pwd-input" class="input" type="password" maxlength="64"
-               placeholder="请输入密码" autocomplete="current-password" />
-      </label>
-
-      <button id="password-login-btn" class="btn btn-primary btn-block" type="button">登录</button>
-      <p class="auth-hint auth-hint-action">
-        <button id="forgot-btn" class="link-btn" type="button">忘记密码 / 设置密码</button>
-      </p>
+    <section class="card">
+      <h2>安装步骤</h2>
+      <ol>
+        <li>点上方按钮下载 APK（约 62 KB，很快）</li>
+        <li>下载完成后，在通知栏或「文件管理 → 下载」里点开它</li>
+        <li>如果提示「不允许安装未知来源的应用」→ 点<strong>设置</strong> → 打开<strong>「允许安装此来源的应用」</strong> → 返回继续安装</li>
+        <li>安装完成，桌面出现「<strong>小说创作台</strong>」图标</li>
+        <li>打开后<b>用邮箱登录</b>（验证码即可，无需注册密码），就能接着写你的小说</li>
+      </ol>
+      <div class="tip">
+        <p>不想装 App？直接用手机浏览器打开 <a href="https://novel-studio-59628.app.workbuddy.host/">网页版</a>，功能和 App 完全一样，还能「添加到桌面」当图标用。</p>
+      </div>
+      <div class="tip">
+        <p><b>装过旧版本？</b>直接下载覆盖安装即可，<b>不用卸载</b>，数据不会丢。装完可在「设置 → 应用 → 小说创作台」看到版本号（应为 v1.4）。</p>
+      </div>
     </section>
 
-    <p id="auth-error" class="auth-error hidden" role="alert"></p>
-    <p class="auth-foot">每位用户只能看到自己的作品，数据在服务端按账号隔离。</p>
-  </main>
-</div>
-
-<!-- ============ 写作主视图 ============ -->
-<div id="app-view" class="app-view hidden">
-
-  <header class="mobile-bar">
-    <button id="open-novels-btn" class="icon-btn" type="button" aria-label="打开作品列表">☰ 作品</button>
-    <span id="mobile-title" class="mobile-title">小说创作台</span>
-    <span class="mobile-bar-actions">
-      <button id="view-toggle-btn-mobile" class="icon-btn" type="button" title="切换显示模式">电脑版</button>
-      <button id="library-btn-mobile" class="icon-btn" type="button" title="作品广场">书库</button>
-      <button id="open-chapters-btn" class="icon-btn" type="button" aria-label="打开章节目录">目录</button>
-    </span>
-  </header>
-
-  <div class="workspace">
-
-    <!-- 左栏：作品列表 -->
-    <aside id="novel-pane" class="novel-pane">
-      <header class="pane-head">
-        <div class="pane-brand">
-          <span class="brand-mark small">墨</span>
-          <span class="pane-brand-name">小说创作台</span>
-        </div>
-        <span class="pane-head-actions">
-          <button id="library-btn" class="btn btn-ghost btn-sm" type="button">书库</button>
-          <button id="new-novel-btn" class="btn btn-primary btn-sm" type="button">＋ 新建作品</button>
-        </span>
-      </header>
-      <div id="novel-stats" class="pane-stats"></div>
-      <div id="novel-list" class="list" aria-label="作品列表"></div>
-      <footer class="pane-foot">
-        <button id="profile-btn" class="user-chip" type="button" title="点击设置 / 修改笔名">
-          <span id="user-avatar" class="avatar">作</span>
-          <span id="user-name" class="user-name">未登录</span>
-        </button>
-        <button id="view-toggle-btn" class="btn btn-ghost btn-sm" type="button" title="切换显示模式">电脑版</button>
-        <button id="logout-btn" class="btn btn-ghost btn-sm" type="button">退出登录</button>
-      </footer>
-    </aside>
-
-    <!-- 中栏：章节目录 -->
-    <section id="chapter-pane" class="chapter-pane">
-      <header class="pane-head">
-        <div class="pane-title-wrap">
-          <h2 id="current-novel-title" class="pane-title">未选择作品</h2>
-          <span id="current-novel-meta" class="pane-meta">—</span>
-        </div>
-        <div class="pane-actions">
-          <button id="novel-info-btn" class="btn btn-ghost btn-sm" type="button" disabled>作品信息</button>
-          <button id="export-btn" class="btn btn-ghost btn-sm" type="button" disabled>导出</button>
-          <button id="delete-novel-btn" class="btn btn-danger-ghost btn-sm" type="button" disabled>删除</button>
-        </div>
-      </header>
-      <div class="pane-subhead">
-        <span class="pane-subhead-label">章节目录</span>
-        <label class="sync-toggle" title="开启后，每次保存都会把这部作品的最新内容同步更新到书库（作品广场）">
-          <input id="auto-sync-checkbox" type="checkbox" disabled />
-          <span>同步到书库</span>
-          <span id="sync-status" class="sync-status"></span>
-        </label>
-        <button id="new-chapter-btn" class="btn btn-primary btn-sm" type="button" disabled>＋ 新建章节</button>
+    <section class="card">
+      <h2>华为手机特别注意</h2>
+      <p>华为系统限制较严，装不上多半是这两个原因：</p>
+      <ol>
+        <li><strong>纯净模式拦截</strong>：先到「设置 → 系统和更新 → 纯净模式」<strong>退出纯净模式</strong>，再安装</li>
+        <li><strong>未授权安装来源</strong>：安装时按提示，给「浏览器」或「文件管理」打开<strong>「安装未知应用」</strong>权限</li>
+      </ol>
+      <div class="warn">
+        <p>⚠️ 若打开后是白屏，多半是系统浏览内核过旧：到「华为应用市场」更新 <b>Android System WebView</b> 或 <b>华为浏览器</b> 后再试。</p>
       </div>
-      <div id="chapter-list" class="list" aria-label="章节目录"></div>
     </section>
 
-    <!-- 右栏：编辑区 -->
-    <main id="editor-pane" class="editor-pane">
-      <div id="editor-empty" class="editor-empty">
-        <div class="empty-mark">✒</div>
-        <h3>开始你的创作</h3>
-        <p>从左栏新建或选择一部作品，再创建章节即可开始写作。<br />章节保存后会持久存储到云端，下次打开可直接继续编辑。</p>
-      </div>
+    <section class="card">
+      <h2>纯血鸿蒙（HarmonyOS NEXT）</h2>
+      <p>纯血鸿蒙<b>不支持安装 APK</b>，用浏览器方式即可：</p>
+      <ol>
+        <li>用「华为浏览器」打开 <a href="https://novel-studio-59628.app.workbuddy.host/" style="color:var(--accent)">小说创作台网页版</a></li>
+        <li>点底部菜单 → <strong>「添加到桌面」</strong></li>
+        <li>桌面会出现图标，点开即用，效果与 App 接近</li>
+      </ol>
+    </section>
 
-      <div id="editor-body" class="editor-body hidden">
-        <header class="editor-head">
-          <input id="chapter-title-input" class="chapter-title-input" type="text"
-                 placeholder="章节标题" maxlength="80" />
-          <div class="editor-head-right">
-            <span id="save-status" class="save-status is-saved">已保存</span>
-            <button id="save-btn" class="btn btn-primary" type="button">保存
-              <kbd class="kbd">Ctrl</kbd><kbd class="kbd">S</kbd>
-            </button>
-          </div>
-        </header>
+    <section class="card">
+      <h2>应用说明</h2>
+      <ul>
+        <li>登录方式：邮箱验证码（无需记密码，登录即可写作）</li>
+        <li>内容云端保存，换设备登录后作品自动同步</li>
+        <li>支持作品 / 章节管理、书库发布、语音输入</li>
+        <li>本安装包仅通过本站分发，请勿从其他渠道下载</li>
+      </ul>
+      <p class="muted" style="margin-top:12px">本应用未上架任何应用商店，安装包由本站直接提供，不经过任何第三方平台。</p>
+    </section>
 
-        <div id="draft-banner" class="draft-banner hidden">
-          <span id="draft-banner-text" class="draft-banner-text"></span>
-          <span class="draft-banner-actions">
-            <button id="draft-restore-btn" class="btn btn-ghost btn-sm" type="button">恢复草稿</button>
-            <button id="draft-discard-btn" class="btn btn-ghost btn-sm" type="button">丢弃</button>
-          </span>
-        </div>
-
-        <div class="editor-scroll">
-          <div class="editor-inner">
-            <textarea id="chapter-content" class="chapter-content" placeholder="在此书写正文……"
-                      spellcheck="false"></textarea>
-          </div>
-        </div>
-
-        <div id="voice-strip" class="voice-strip hidden" aria-live="polite">
-          <span class="voice-wave" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-          <span id="voice-text" class="voice-text"></span>
-        </div>
-
-        <footer class="editor-foot">
-          <span id="word-count" class="word-count">0 字</span>
-          <span id="saved-at" class="saved-at"></span>
-          <button id="voice-btn" class="voice-btn" type="button" aria-pressed="false" title="用说话代替打字">
-            <svg class="voice-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                 stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <rect x="9" y="3" width="6" height="11" rx="3"></rect>
-              <path d="M5.5 11.5a6.5 6.5 0 0 0 13 0"></path>
-              <path d="M12 18.5v2.5"></path>
-            </svg>
-            <span id="voice-btn-label">语音输入</span>
-          </button>
-          <label class="autosave-toggle">
-            <input id="autosave-checkbox" type="checkbox" checked /> 自动保存
-          </label>
-        </footer>
-      </div>
-    </main>
+    <footer class="muted">
+      <p>小说创作台 · 用文字留住时间</p>
+    </footer>
   </div>
-</div>
-
-<!-- 移动端抽屉遮罩 -->
-<div id="drawer-backdrop" class="drawer-backdrop hidden"></div>
-
-<!-- 书库（作品广场）覆盖层 -->
-<div id="library-view" class="library-view hidden">
-  <header class="library-head">
-    <button id="library-back-btn" class="icon-btn" type="button" aria-label="返回" style="display:none">←</button>
-    <h2 id="library-title" class="library-title">作品广场</h2>
-    <span class="library-head-actions">
-      <button id="library-upload-btn" class="btn btn-primary btn-sm" type="button">＋ 上传作品</button>
-      <button id="library-close-btn" class="icon-btn" type="button" aria-label="关闭">×</button>
-    </span>
-  </header>
-  <div id="library-body" class="library-body"></div>
-</div>
-
-<!-- 浮层容器 -->
-<div id="toast-container" class="toast-container" aria-live="polite"></div>
-<div id="modal-root"></div>
-
-<!-- 启动遮罩 -->
-<div id="boot-overlay" class="boot-overlay">
-  <div class="boot-spinner" aria-hidden="true"></div>
-  <p id="boot-text">正在加载创作台…</p>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@tencent-ai/workbuddy-cloud-sdk@dev/lib/index.global.js"
-        onerror="window.__sdkLoadFailed = true"></script>
-<script src="app.js"></script>
 </body>
 </html>
